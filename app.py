@@ -21,6 +21,16 @@ base_dir = './'
 def hello_world():
     return 'Rumour-Reckon Backend running!'
 
+# Provides the current status of the analysis
+
+
+status = 0
+
+
+@app.route('/status')
+def getStatus():
+    return str(status)
+
 ### Individual tweet details (without comments)  ###
 
 
