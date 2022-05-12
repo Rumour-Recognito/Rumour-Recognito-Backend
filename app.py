@@ -84,7 +84,6 @@ def process_data(text):
         filteredText = filterTextFromSpecialCharacters(sentence)
         special_char_removed_sentences.append(filteredText)
 
-    
     filtered_sentences = removeEmptySentence(special_char_removed_sentences)
 
     global status
