@@ -1,5 +1,6 @@
 from translate_text import *
 import csv
+import config
 from search_google import *
 from sentimental_analysis import *
 from scraping.url_scraper import *
@@ -27,6 +28,8 @@ def process_data(text):
         sentence = translate_to_english(sentence)
         translated_sentences.append(sentence)
 
+
+    config.status = 1
     result = getSimilarNews(translated_sentences)
     return result
 
@@ -104,6 +107,8 @@ def getSimilarNews(sentences):
     dict['heading'] = headings
     dict['body'] = bodies
 
+
+    config.status = 2
     result = stance_detect(bodiesContent, headlinesContent)
     return result
 
@@ -137,6 +142,7 @@ def stance_detect(bodies, headlines):
         elif(prediction == 'disagree'):
             score -= 1
 
+    config.status = 3
     print(score)
 
     if(score > 0):

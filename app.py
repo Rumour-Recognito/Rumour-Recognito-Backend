@@ -1,4 +1,5 @@
 import imp
+import config
 from posixpath import commonpath
 from flask import Flask, request, jsonify
 from scraping.twitter_scraper import *
@@ -14,28 +15,24 @@ from search_google import *
 app = Flask(__name__)
 CORS(app)
 base_dir = './'
+
 ### Check if server is suning successfully ###
-
-
 @app.route('/')
 def hello_world():
     return 'Rumour-Reckon Backend running!'
 
 
 # Provides the current status of the analysis
-status = 0
-
-
 @app.route('/status')
 def getStatus():
-    print(status)
-    return str(status)
+    return str(config.status)
 
 ### Individual tweet details (without comments)  ###
 
 
 @app.route('/tweet-scrape')
 def scrape_twitter():
+    config.status = 0
     id = request.args.get('id')
     tweet = getTweet(id)
     print(tweet)
@@ -54,6 +51,7 @@ def scrape_twitter_comments():
 
 @app.route('/facebook-scrape')
 def scrape_facebook():
+    config.status = 0
     id = request.args.get('id')
     post = scrapePosts(id)
     print(post)
