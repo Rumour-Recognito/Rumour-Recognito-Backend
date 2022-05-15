@@ -9,7 +9,7 @@ from flask_cors import CORS
 from utility import *
 
 from search_google import *
-#from image_process import *
+from image_process import *
 
 
 app = Flask(__name__)
@@ -17,6 +17,8 @@ CORS(app)
 base_dir = './'
 
 ### Check if server is suning successfully ###
+
+
 @app.route('/')
 def hello_world():
     return 'Rumour-Reckon Backend running!'
@@ -37,7 +39,7 @@ def scrape_twitter():
     tweet = getTweet(id)
     print(tweet)
     print("Image analysis: ")
-    # print(analyze_image(tweet['media'][0]['image_url']))
+    print(analyze_image(tweet['media'][0]['image_url']))
     result = process_data(tweet['text'])
     return result
 
@@ -56,7 +58,7 @@ def scrape_facebook():
     post = scrapePosts(id)
     print(post)
     print("Image analysis: ")
-    # print(analyze_image(post['image']))
+    print(analyze_image(post['image']))
     result = process_data(post['post_text'])
 
     return result
@@ -74,6 +76,8 @@ def predict():
 
 @app.route('/plain-text')
 def analyze_text():
+    config.status = 0
+
     text = request.args.get('text')
 
     print(text)

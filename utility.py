@@ -28,7 +28,6 @@ def process_data(text):
         sentence = translate_to_english(sentence)
         translated_sentences.append(sentence)
 
-
     config.status = 1
     result = getSimilarNews(translated_sentences)
     return result
@@ -107,7 +106,6 @@ def getSimilarNews(sentences):
     dict['heading'] = headings
     dict['body'] = bodies
 
-
     config.status = 2
     result = stance_detect(bodiesContent, headlinesContent)
     return result
@@ -134,13 +132,7 @@ def stance_detect(bodies, headlines):
             predictions.extend(each)
         predictions.remove("Prediction")
 
-    score = sentimental_analysis(predictions, headlines, bodies)
-
-    for prediction in predictions:
-        if(prediction == 'agree'):
-            score += 1
-        elif(prediction == 'disagree'):
-            score -= 1
+    score = sentimental_analysis_for_discuss(predictions, headlines, bodies)
 
     config.status = 3
     print(score)
