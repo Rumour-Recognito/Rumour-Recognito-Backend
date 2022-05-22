@@ -6,8 +6,8 @@ import re
 from nltk.corpus import stopwords
 
 '''Uncomment the line first time you are running the Algorithm'''
-#nltk.download('punkt')
-#nltk.download('wordnet')
+nltk.download('punkt')
+nltk.download('wordnet')
 
 _wnl = nltk.WordNetLemmatizer()
 def normalize_word(w):

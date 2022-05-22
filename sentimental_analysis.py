@@ -5,7 +5,7 @@ from nltk.sentiment.vader import SentimentIntensityAnalyzer
 def sentimental_analysis_for_discuss(predictions_list, headlines_list, bodies_list):
 
     # Uncomment this line for the first time you run in your computer
-    # nltk.download("vader_lexicon")
+    nltk.download("vader_lexicon")
     csil = SentimentIntensityAnalyzer()
 
     discuss_list = []
