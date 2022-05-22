@@ -1,5 +1,7 @@
 tesseract-ocr
 tesseract-ocr-eng
+ffmpeg
+libxext6
 libsm6
 libxrender1
 libfontconfig1
