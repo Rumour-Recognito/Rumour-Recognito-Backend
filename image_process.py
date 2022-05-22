@@ -4,18 +4,20 @@ import cv2
 
 
 def analyze_image(url):
-    pytesseract.pytesseract.tesseract_cmd = r'C:\\Program Files\\Tesseract-OCR\\tesseract.exe'
+    #pytesseract.pytesseract.tesseract_cmd = r'C:\\Program Files\\Tesseract-OCR\\tesseract.exe'
+    pytesseract.pytesseract.tesseract_cmd = "/app/.apt/usr/bin/tesseract"
 
-    file_name = "image.jpg"
+    if(url != ''):
+        file_name = "image.jpg"
 
-    res = requests.get(url, stream=True)
+        res = requests.get(url, stream=True)
 
-    if res.status_code == 200:
-        with open(file_name, 'wb') as f:
-            f.write(requests.get(url).content)
-        print('Image sucessfully Downloaded: ', file_name)
-    else:
-        print('Image Couldn\'t be retrieved')
+        if res.status_code == 200:
+            with open(file_name, 'wb') as f:
+                f.write(requests.get(url).content)
+            print('Image sucessfully Downloaded: ', file_name)
+        else:
+            print('Image Couldn\'t be retrieved')
 
     img = cv2.imread("image.jpg")
     (h, w) = img.shape[:2]

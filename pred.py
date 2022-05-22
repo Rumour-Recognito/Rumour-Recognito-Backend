@@ -11,7 +11,6 @@ from model_prediction.util import FNCData, bow_train, pipeline_train, pipeline_t
 import random
 import tensorflow as tf
 import numpy as np
-import pandas as pd
 import os
 
 

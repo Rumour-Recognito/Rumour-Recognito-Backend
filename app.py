@@ -1,13 +1,10 @@
-import imp
 import config
-from posixpath import commonpath
 from flask import Flask, request, jsonify
 from scraping.twitter_scraper import *
 from scraping.fb_scraper import *
 from scraping.url_scraper import *
 from flask_cors import CORS
 from utility import *
-
 from search_google import *
 from image_process import *
 
@@ -57,8 +54,9 @@ def scrape_facebook():
     id = request.args.get('id')
     post = scrapePosts(id)
     print(post)
-    print("Image analysis: ")
-    print(analyze_image(post['image']))
+    if(post['image'] != None):
+        print("Image analysis: ")
+        print(analyze_image(post['image']))
     result = process_data(post['post_text'])
 
     return result
@@ -85,3 +83,11 @@ def analyze_text():
     result = process_data(text)
 
     return result
+
+@app.route('/analyze-image', methods=['POST'])
+def analyze():
+    file = request.files['file']
+    file.save(os.path.join(base_dir, "image.jpg"))
+    print(analyze_image(''))
+    return "Successful"
+  

@@ -15,11 +15,8 @@ from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.feature_extraction.text import TfidfTransformer
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
-import tensorflow as tf
 from model_prediction.refuting import refuting_features_title,refuting_features_body
 from model_prediction.refuting import mutual_information_title,mutual_information_body
-from model_prediction.word2vec import word2vec_cos, wmd_distance
-import gensim
 
 #Load the Google News Word2vec model
 # model= gensim.models.KeyedVectors.load_word2vec_format('.\google_news\GoogleNews-vectors-negative300.bin.gz',limit=500000, binary=True)

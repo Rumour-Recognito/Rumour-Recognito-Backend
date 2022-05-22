@@ -143,3 +143,15 @@ def stance_detect(bodies, headlines):
         return "LOOKS FAKE"
     else:
         return "UNPREDICTABLE"
+
+
+
+#import re
+
+#t = "https://www.facebook.com/permalink.php?story_fbid=112103031341910&id=100076266405072"
+
+#print(re.findall(r'(?:(?:http|https):\/\/(?:www|m|mbasic|business)\.(?:facebook|fb)\.com\/)(?:photo(?:\.php|s)|permalink\.php|video\.php|media|watch\/|questions|notes|[^\/]+\/(?:activity|posts|videos|photos))[\/?](?:fbid=|story_fbid=|id=|b=|v=|)([0-9]+|[^\/]+\/[\d]+)', t))
+
+#t = "https://twitter.com/VVSLaxman281/status/1525636532513939456"
+
+#print(re.findall(r'twitter\.com\/.*\/status(?:es)?\/([^\/\?]+)', t))
