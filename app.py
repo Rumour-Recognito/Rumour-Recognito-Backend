@@ -93,8 +93,11 @@ def analyze_text():
 
 @app.route('/analyze-image', methods=['POST'])
 def analyze():
+    mycol.update_many({}, [{'$set': {'status': 0}}])
     file = request.files['file']
     file.save(os.path.join(base_dir, "image.jpg"))
-    print(analyze_image(''))
-    return "Successful"
+    text = analyze_image('')
+    print(text)
+    result = process_data(text)
+    return result
   
