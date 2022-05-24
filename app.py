@@ -14,8 +14,6 @@ CORS(app)
 base_dir = './'
 
 ### Check if server is suning successfully ###
-
-
 @app.route('/')
 def hello_world():
     return 'Rumour-Reckon Backend running!'
@@ -26,13 +24,14 @@ def hello_world():
 def getStatus():
     return str(config.status)
 
+
 ### Individual tweet details (without comments)  ###
-
-
 @app.route('/tweet-scrape')
 def scrape_twitter():
     config.status = 0
-    id = request.args.get('id')
+    data = request.get_json()
+    id = tweet_id_extract(data['link'])
+    print(id)
     tweet = getTweet(id)
     print(tweet)
     print("Image analysis: ")
@@ -51,7 +50,9 @@ def scrape_twitter_comments():
 @app.route('/facebook-scrape')
 def scrape_facebook():
     config.status = 0
-    id = request.args.get('id')
+    data = request.get_json()
+    id = fb_id_extract(data['link'])
+    print(id)
     post = scrapePosts(id)
     print(post)
     if(post['image'] != None):

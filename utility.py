@@ -1,10 +1,12 @@
 from translate_text import *
 import csv
 import config
+import re
 from search_google import *
 from sentimental_analysis import *
 from scraping.url_scraper import *
 from pred import *
+from flask import session
 
 
 def process_data(text):
@@ -144,14 +146,10 @@ def stance_detect(bodies, headlines):
     else:
         return "UNPREDICTABLE"
 
+def fb_id_extract(url):
+    id = re.findall(r'(?:(?:http|https):\/\/(?:www|m|mbasic|business)\.(?:facebook|fb)\.com\/)(?:photo(?:\.php|s)|permalink\.php|video\.php|media|watch\/|questions|notes|[^\/]+\/(?:activity|posts|videos|photos))[\/?](?:fbid=|story_fbid=|id=|b=|v=|)([0-9]+|[^\/]+\/[\d]+)', url)
+    return id[0]
 
-
-#import re
-
-#t = "https://www.facebook.com/permalink.php?story_fbid=112103031341910&id=100076266405072"
-
-#print(re.findall(r'(?:(?:http|https):\/\/(?:www|m|mbasic|business)\.(?:facebook|fb)\.com\/)(?:photo(?:\.php|s)|permalink\.php|video\.php|media|watch\/|questions|notes|[^\/]+\/(?:activity|posts|videos|photos))[\/?](?:fbid=|story_fbid=|id=|b=|v=|)([0-9]+|[^\/]+\/[\d]+)', t))
-
-#t = "https://twitter.com/VVSLaxman281/status/1525636532513939456"
-
-#print(re.findall(r'twitter\.com\/.*\/status(?:es)?\/([^\/\?]+)', t))
+def tweet_id_extract(url):
+    id = re.findall(r'twitter\.com\/.*\/status(?:es)?\/([^\/\?]+)', url)
+    return id[0]

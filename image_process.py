@@ -4,8 +4,8 @@ import cv2
 
 
 def analyze_image(url):
-    #pytesseract.pytesseract.tesseract_cmd = r'C:\\Program Files\\Tesseract-OCR\\tesseract.exe'
-    pytesseract.pytesseract.tesseract_cmd = "/app/.apt/usr/bin/tesseract"
+    pytesseract.pytesseract.tesseract_cmd = r'C:\\Program Files\\Tesseract-OCR\\tesseract.exe'
+    #pytesseract.pytesseract.tesseract_cmd = "/app/.apt/usr/bin/tesseract"
 
     if(url != ''):
         file_name = "image.jpg"
