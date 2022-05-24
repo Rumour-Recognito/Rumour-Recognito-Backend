@@ -1,5 +1,5 @@
-import config
 from flask import Flask, request, jsonify
+import pymongo
 from scraping.twitter_scraper import *
 from scraping.fb_scraper import *
 from scraping.url_scraper import *
@@ -13,6 +13,11 @@ app = Flask(__name__)
 CORS(app)
 base_dir = './'
 
+myclient = pymongo.MongoClient("mongodb+srv://squadra:1234@cluster0.wiuug.mongodb.net/?retryWrites=true&w=majority")
+mydb = myclient["rumor_recognito_db"]
+mycol = mydb["progress"]
+mycol.update_many({}, [{'$set': {'status': -1}}])
+
 ### Check if server is suning successfully ###
 @app.route('/')
 def hello_world():
@@ -22,13 +27,13 @@ def hello_world():
 # Provides the current status of the analysis
 @app.route('/status')
 def getStatus():
-    return str(config.status)
-
+    data = mycol.find_one()
+    return str(data['status'])
 
 ### Individual tweet details (without comments)  ###
 @app.route('/tweet-scrape')
 def scrape_twitter():
-    config.status = 0
+    mycol.update_many({}, [{'$set': {'status': 0}}])
     data = request.get_json()
     id = tweet_id_extract(data['link'])
     print(id)
@@ -49,7 +54,7 @@ def scrape_twitter_comments():
 
 @app.route('/facebook-scrape')
 def scrape_facebook():
-    config.status = 0
+    mycol.update_many({}, [{'$set': {'status': 0}}])
     data = request.get_json()
     id = fb_id_extract(data['link'])
     print(id)
@@ -75,7 +80,8 @@ def predict():
 
 @app.route('/plain-text')
 def analyze_text():
-    config.status = 0
+
+    mycol.update_many({}, [{'$set': {'status': 0}}])
 
     text = request.args.get('text')
 

@@ -1,13 +1,15 @@
 from translate_text import *
 import csv
-import config
+import pymongo
 import re
 from search_google import *
 from sentimental_analysis import *
 from scraping.url_scraper import *
 from pred import *
-from flask import session
 
+myclient = pymongo.MongoClient("mongodb+srv://squadra:1234@cluster0.wiuug.mongodb.net/?retryWrites=true&w=majority")
+mydb = myclient["rumor_recognito_db"]
+mycol = mydb["progress"]
 
 def process_data(text):
     sentences = text.split('\n')
@@ -30,7 +32,8 @@ def process_data(text):
         sentence = translate_to_english(sentence)
         translated_sentences.append(sentence)
 
-    config.status = 1
+    mycol.update_many({}, [{'$set': {'status': 1}}])
+
     result = getSimilarNews(translated_sentences)
     return result
 
@@ -108,7 +111,8 @@ def getSimilarNews(sentences):
     dict['heading'] = headings
     dict['body'] = bodies
 
-    config.status = 2
+    mycol.update_many({}, [{'$set': {'status': 2}}])
+
     result = stance_detect(bodiesContent, headlinesContent)
     return result
 
@@ -136,7 +140,8 @@ def stance_detect(bodies, headlines):
 
     score = sentimental_analysis_for_discuss(predictions, headlines, bodies)
 
-    config.status = 3
+    mycol.update_many({}, [{'$set': {'status': 3}}])
+
     print(score)
 
     if(score > 0):
