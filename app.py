@@ -31,7 +31,7 @@ def getStatus():
     return str(data['status'])
 
 ### Individual tweet details (without comments)  ###
-@app.route('/tweet-scrape')
+@app.route('/tweet-scrape', methods=['POST'])
 def scrape_twitter():
     mycol.update_many({}, [{'$set': {'status': 0}}])
     data = request.get_json()
@@ -39,8 +39,9 @@ def scrape_twitter():
     print(id)
     tweet = getTweet(id)
     print(tweet)
-    print("Image analysis: ")
-    print(analyze_image(tweet['media'][0]['image_url']))
+    if tweet['media']:
+        print("Image analysis: ")
+        print(analyze_image(tweet['media'][0]['image_url']))
     result = process_data(tweet['text'])
     return result
 
@@ -52,7 +53,7 @@ def scrape_twitter_comments():
     return jsonify(comments)
 
 
-@app.route('/facebook-scrape')
+@app.route('/facebook-scrape', methods=['POST'])
 def scrape_facebook():
     mycol.update_many({}, [{'$set': {'status': 0}}])
     data = request.get_json()
