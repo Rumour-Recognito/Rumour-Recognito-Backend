@@ -7,12 +7,16 @@ from sentimental_analysis import *
 from scraping.url_scraper import *
 from pred import *
 
-myclient = pymongo.MongoClient("mongodb+srv://squadra:1234@cluster0.wiuug.mongodb.net/?retryWrites=true&w=majority")
+myclient = pymongo.MongoClient(
+    "mongodb+srv://squadra:1234@cluster0.wiuug.mongodb.net/?retryWrites=true&w=majority")
 mydb = myclient["rumor_recognito_db"]
 mycol = mydb["progress"]
 
+
 def process_data(text):
     sentences = text.split('\n')
+
+    mycol.update_many({}, [{'$set': {'status': 1}}])
 
     link_removed_sentences = []
     for sentence in sentences:
@@ -26,13 +30,13 @@ def process_data(text):
 
     filtered_sentences = removeEmptySentence(special_char_removed_sentences)
 
+    mycol.update_many({}, [{'$set': {'status': 2}}])
+
     translated_sentences = []
 
     for sentence in filtered_sentences:
         sentence = translate_to_english(sentence)
         translated_sentences.append(sentence)
-
-    mycol.update_many({}, [{'$set': {'status': 1}}])
 
     result = getSimilarNews(translated_sentences)
     return result
@@ -78,6 +82,9 @@ def removeEmptySentence(sentences):
 
 
 def getSimilarNews(sentences):
+
+    mycol.update_many({}, [{'$set': {'status': 3}}])
+
     counter = 1
     bodies = []
     bodiesColumnTitles = ['Body ID', 'articleBody']
@@ -111,8 +118,6 @@ def getSimilarNews(sentences):
     dict['heading'] = headings
     dict['body'] = bodies
 
-    mycol.update_many({}, [{'$set': {'status': 2}}])
-
     result = stance_detect(bodiesContent, headlinesContent)
     return result
 
@@ -129,6 +134,9 @@ def google_search_content(query, limit):
 
 
 def stance_detect(bodies, headlines):
+
+    mycol.update_many({}, [{'$set': {'status': 4}}])
+
     load()
     predictions = []
     with open('./result/predictions_test.csv', newline='') as f:
@@ -140,7 +148,7 @@ def stance_detect(bodies, headlines):
 
     score = sentimental_analysis_for_discuss(predictions, headlines, bodies)
 
-    mycol.update_many({}, [{'$set': {'status': 3}}])
+    mycol.update_many({}, [{'$set': {'status': 5}}])
 
     print(score)
 
@@ -151,9 +159,12 @@ def stance_detect(bodies, headlines):
     else:
         return "UNPREDICTABLE"
 
+
 def fb_id_extract(url):
-    id = re.findall(r'(?:(?:http|https):\/\/(?:www|m|mbasic|business)\.(?:facebook|fb)\.com\/)(?:photo(?:\.php|s)|permalink\.php|video\.php|media|watch\/|questions|notes|[^\/]+\/(?:activity|posts|videos|photos))[\/?](?:fbid=|story_fbid=|id=|b=|v=|)([0-9]+|[^\/]+\/[\d]+)', url)
+    id = re.findall(
+        r'(?:(?:http|https):\/\/(?:www|m|mbasic|business)\.(?:facebook|fb)\.com\/)(?:photo(?:\.php|s)|permalink\.php|video\.php|media|watch\/|questions|notes|[^\/]+\/(?:activity|posts|videos|photos))[\/?](?:fbid=|story_fbid=|id=|b=|v=|)([0-9]+|[^\/]+\/[\d]+)', url)
     return id[0]
+
 
 def tweet_id_extract(url):
     id = re.findall(r'twitter\.com\/.*\/status(?:es)?\/([^\/\?]+)', url)

@@ -13,12 +13,15 @@ app = Flask(__name__)
 CORS(app)
 base_dir = './'
 
-myclient = pymongo.MongoClient("mongodb+srv://squadra:1234@cluster0.wiuug.mongodb.net/?retryWrites=true&w=majority")
+myclient = pymongo.MongoClient(
+    "mongodb+srv://squadra:1234@cluster0.wiuug.mongodb.net/?retryWrites=true&w=majority")
 mydb = myclient["rumor_recognito_db"]
 mycol = mydb["progress"]
 mycol.update_many({}, [{'$set': {'status': -1}}])
 
 ### Check if server is suning successfully ###
+
+
 @app.route('/')
 def hello_world():
     return 'Rumour-Reckon Backend running!'
@@ -38,6 +41,8 @@ def resetStatus():
     return str(data['status'])
 
 ### Individual tweet details (without comments)  ###
+
+
 @app.route('/tweet-scrape', methods=['POST'])
 def scrape_twitter():
     mycol.update_many({}, [{'$set': {'status': 0}}])
@@ -99,6 +104,7 @@ def analyze_text():
 
     return result
 
+
 @app.route('/analyze-image', methods=['POST'])
 def analyze():
     mycol.update_many({}, [{'$set': {'status': 0}}])
@@ -108,4 +114,3 @@ def analyze():
     print(text)
     result = process_data(text)
     return result
-  
