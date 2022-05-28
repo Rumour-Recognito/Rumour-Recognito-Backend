@@ -1,10 +1,10 @@
-# Getting Started with Create Rumor Recognito
+# Getting Started with Create Rumour Recognito
 
 Backend (Model Execution and API)
 
 ## Installation Steps
 
-Clone the Rumor-Recognito-Frontend repository from GitHub OR unzip the downloaded ZIP folder 
+Clone the Rumour-Recognito-Frontend repository from GitHub OR unzip the downloaded ZIP folder 
 
 ### `Requirements:`
 
