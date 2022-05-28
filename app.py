@@ -20,8 +20,6 @@ mycol = mydb["progress"]
 mycol.update_many({}, [{'$set': {'status': -1}}])
 
 ### Check if server is suning successfully ###
-
-
 @app.route('/')
 def hello_world():
     return 'Rumour-Reckon Backend running!'
@@ -34,8 +32,6 @@ def getStatus():
     return str(data['status'])
 
 # resets the status to -1
-
-
 @app.route('/reset-status')
 def resetStatus():
     mycol.update_many({}, [{'$set': {'status': -1}}])
@@ -43,8 +39,6 @@ def resetStatus():
     return str(data['status'])
 
 ### Individual tweet details (without comments)  ###
-
-
 @app.route('/tweet-scrape', methods=['POST'])
 def scrape_twitter():
     mycol.update_many({}, [{'$set': {'status': 0}}])
@@ -53,20 +47,24 @@ def scrape_twitter():
     print(id)
     tweet = getTweet(id)
     print(tweet)
+    tweetText = tweet['text']
+    print("Before image: " + tweetText)
     if tweet['media']:
         print("Image analysis: ")
         print(analyze_image(tweet['media'][0]['image_url']))
-    result = process_data(tweet['text'])
+        tweetText = tweetText + " " + analyze_image(tweet['media'][0]['image_url'])
+    print("After image: " + tweetText)
+    result = process_data(tweetText)
     return result
 
-
+# Scrapes tweet comments
 @app.route('/tweet-comments-scrape')
 def scrape_twitter_comments():
     id = request.args.get('id')
     comments = getTweetComments(id)
     return jsonify(comments)
 
-
+# Scrape Facebook posts
 @app.route('/facebook-scrape', methods=['POST'])
 def scrape_facebook():
     mycol.update_many({}, [{'$set': {'status': 0}}])
@@ -75,14 +73,17 @@ def scrape_facebook():
     print(id)
     post = scrapePosts(id)
     print(post)
+    postText = post['post_text']
     if(post['image'] != None):
         print("Image analysis: ")
         print(analyze_image(post['image']))
-    result = process_data(post['post_text'])
+        postText = postText + " " + analyze_image(post['image'])
+    print(postText)
+    result = process_data(postText)
 
     return result
 
-
+# Scrape plain URL
 @app.route('/url-scrape', methods=['POST'])
 def predict():
     if request.method == 'POST':
@@ -92,7 +93,7 @@ def predict():
     else:
         return "Something went wrong"
 
-
+# Plain text checking
 @app.route('/plain-text')
 def analyze_text():
 
@@ -106,7 +107,7 @@ def analyze_text():
 
     return result
 
-
+# Analyze Image OCR
 @app.route('/analyze-image', methods=['POST'])
 def analyze():
     mycol.update_many({}, [{'$set': {'status': 0}}])
