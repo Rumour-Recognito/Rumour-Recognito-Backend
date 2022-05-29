@@ -2,22 +2,20 @@
 
 Backend (Model Execution and API)
 
-## Installation Steps
+### Installation Steps
+> Clone the Rumour-Recognito-Frontend repository from GitHub OR unzip the downloaded ZIP folder 
 
-Clone the Rumour-Recognito-Frontend repository from GitHub OR unzip the downloaded ZIP folder 
+### Requirements:
+> python 3.7.7 should be present in your system
 
-### `Requirements:`
+### Step 1:
+> Open the project in any IDE (VS Code)
 
-python 3.7.7 should be present in your system
+### Step 2:
+> Run command `pip install -r requirements.txt` in terminal
 
-### `Step 1: `
-Open the project in any IDE (VS Code)
+### Step 3:
+> Run command `flask run` in terminal
 
-### `Step 2: `
-Run command ‘pip install -r requirements.txt’ in terminal
-
-### `Step 3: `
-Run command ‘flask run’ in terminal
-
-### `Step 4: `
-Go to http://localhost:5000 for the backend to get started running
+### Step 4:
+> Go to http://localhost:5000 for the backend to get started running
