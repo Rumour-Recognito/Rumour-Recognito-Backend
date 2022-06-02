@@ -21,23 +21,29 @@ mycol = mydb["progress"]
 mycol.update_many({}, [{'$set': {'status': -1}}])
 
 ### Check if server is running successfully ###
+
+
 @app.route('/')
 def hello_world():
-    print("app is running")
     return 'Rumour-Reckon Backend running!'
 
 # Return Job ID for client
+
+
 @app.route('/getId')
 def getJobId():
-    obj = { "status": -1, "news_text": "", "similar_news": [], "result": "" }
-    x = mycol.insert_one(obj)
+    job = {"status": -1, "type": -1, "news_text": "",
+           "similar_news": [], "result": ""}
+    x = mycol.insert_one(job)
     return str(x.inserted_id)
 
 # Delete Job details
+
+
 @app.route('/deleteId')
 def deleteJob():
     id = request.args.get('id')
-    obj = { "_id": ObjectId(id) }
+    obj = {"_id": ObjectId(id)}
     x = mycol.delete_one(obj)
     return "Deleted successfully!"
 

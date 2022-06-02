@@ -13,6 +13,8 @@ mydb = myclient["rumor_recognito_db"]
 mycol = mydb["progress"]
 
 # Preprocess sentences and translate
+
+
 def process_data(text):
     sentences = text.split('\n')
 
@@ -42,6 +44,8 @@ def process_data(text):
     return result
 
 # function to remove links from sentences
+
+
 def removeLinksAndGetSentences(text):
     wordsInText = text.split(' ')
     filteredWord = []
@@ -53,6 +57,8 @@ def removeLinksAndGetSentences(text):
     return ' '.join(filteredWord)
 
 # function to filterTextFromSpecialCharacters
+
+
 def filterTextFromSpecialCharacters(text):
     text = text.strip()
     filteredText = []
@@ -77,6 +83,8 @@ def removeEmptySentence(sentences):
     return nonEmptySentences
 
 # Search news from Google
+
+
 def getSimilarNews(sentences):
 
     mycol.update_many({}, [{'$set': {'status': 3}}])
@@ -109,6 +117,8 @@ def google_search_content(query, limit):
     return allContents
 
 # Execute model
+
+
 def stance_detect(headlines_list, bodies_list):
     mycol.update_many({}, [{'$set': {'status': 4}}])
 
@@ -136,12 +146,16 @@ def stance_detect(headlines_list, bodies_list):
         return "UNPREDICTABLE"
 
 # Extract id from fb url
+
+
 def fb_id_extract(url):
     id = re.findall(
         r'(?:(?:http|https):\/\/(?:www|m|mbasic|business)\.(?:facebook|fb)\.com\/)(?:photo(?:\.php|s)|permalink\.php|video\.php|media|watch\/|questions|notes|[^\/]+\/(?:activity|posts|videos|photos))[\/?](?:fbid=|story_fbid=|id=|b=|v=|)([0-9]+|[^\/]+\/[\d]+)', url)
     return id[0]
 
 # Extract id from twitter url
+
+
 def tweet_id_extract(url):
     id = re.findall(r'twitter\.com\/.*\/status(?:es)?\/([^\/\?]+)', url)
     return id[0]
