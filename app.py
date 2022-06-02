@@ -42,8 +42,8 @@ def getJobId():
 
 @app.route('/deleteId')
 def deleteJob():
-    id = request.args.get('id')
-    obj = {"_id": ObjectId(id)}
+    jobId = request.args.get('jobId')
+    obj = {"_id": ObjectId(jobId)}
     x = mycol.delete_one(obj)
     return "Deleted successfully!"
 
@@ -51,7 +51,8 @@ def deleteJob():
 # Provides the current status of the analysis
 @app.route('/status')
 def getStatus():
-    data = mycol.find_one()
+    jobId = request.args.get('jobId')
+    data = mycol.find_one({"_id": ObjectId(jobId)})
     return str(data['status'])
 
 # resets the status to -1
@@ -68,8 +69,9 @@ def resetStatus():
 
 @app.route('/tweet-scrape', methods=['POST'])
 def scrape_twitter():
-    mycol.update_many({}, [{'$set': {'status': 0}}])
     data = request.get_json()
+    mycol.update_one({'_id': ObjectId(data['jobId'])}, {"$set": {"status": 0}}, upsert=False)
+    mycol.update_one({'_id': ObjectId(data['jobId'])}, {"$set": {"type": 1}}, upsert=False)
     id = tweet_id_extract(data['link'])
     print(id)
     tweet = getTweet(id)
@@ -82,7 +84,8 @@ def scrape_twitter():
         tweetText = tweetText + " " + \
             analyze_image(tweet['media'][0]['image_url'])
     print("After image: " + tweetText)
-    result = process_data(tweetText)
+    mycol.update_one({'_id': ObjectId(data['jobId'])}, {"$set": {"news_text": tweetText}}, upsert=False)
+    result = process_data(tweetText, data['jobId'])
     return result
 
 # Scrapes tweet comments
@@ -99,8 +102,9 @@ def scrape_twitter_comments():
 
 @app.route('/facebook-scrape', methods=['POST'])
 def scrape_facebook():
-    mycol.update_many({}, [{'$set': {'status': 0}}])
     data = request.get_json()
+    mycol.update_one({'_id': ObjectId(data['jobId'])}, {"$set": {"status": 0}}, upsert=False)
+    mycol.update_one({'_id': ObjectId(data['jobId'])}, {"$set": {"type": 0}}, upsert=False)
     id = fb_id_extract(data['link'])
     print(id)
     post = scrapePosts(id)
@@ -111,7 +115,8 @@ def scrape_facebook():
         print(analyze_image(post['image']))
         postText = postText + " " + analyze_image(post['image'])
     print(postText)
-    result = process_data(postText)
+    mycol.update_one({'_id': ObjectId(data['jobId'])}, {"$set": {"news_text": postText}}, upsert=False)
+    result = process_data(postText, data['jobId'])
 
     return result
 
@@ -132,14 +137,14 @@ def predict():
 
 @app.route('/plain-text')
 def analyze_text():
-
-    mycol.update_many({}, [{'$set': {'status': 0}}])
-
     text = request.args.get('text')
-
+    jobId = request.args.get('jobId')
+    mycol.update_one({'_id': ObjectId(jobId)}, {"$set": {"status": 0}}, upsert=False)
+    mycol.update_one({'_id': ObjectId(jobId)}, {"$set": {"type": 2}}, upsert=False)
+    mycol.update_one({'_id': ObjectId(jobId)}, {"$set": {"news_text": text}}, upsert=False)
     print(text)
 
-    result = process_data(text)
+    result = process_data(text, jobId)
 
     return result
 
@@ -148,10 +153,13 @@ def analyze_text():
 
 @app.route('/analyze-image', methods=['POST'])
 def analyze():
-    mycol.update_many({}, [{'$set': {'status': 0}}])
+    jobId = request.args.get('jobId')
+    mycol.update_one({'_id': ObjectId(jobId)}, {"$set": {"status": 0}}, upsert=False)
+    mycol.update_one({'_id': ObjectId(jobId)}, {"$set": {"type": 3}}, upsert=False)
     file = request.files['file']
     file.save(os.path.join(base_dir, "image.jpg"))
     text = analyze_image('')
     print(text)
-    result = process_data(text)
+    mycol.update_one({'_id': ObjectId(jobId)}, {"$set": {"news_text": text}}, upsert=False)
+    result = process_data(text, jobId)
     return result

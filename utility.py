@@ -1,4 +1,5 @@
 from translate_text import *
+from bson.objectid import ObjectId
 import csv
 import pymongo
 import re
@@ -15,10 +16,10 @@ mycol = mydb["progress"]
 # Preprocess sentences and translate
 
 
-def process_data(text):
+def process_data(text, jobId):
     sentences = text.split('\n')
 
-    mycol.update_many({}, [{'$set': {'status': 1}}])
+    mycol.update_one({'_id': ObjectId(jobId)}, {"$set": {"status": 1}}, upsert=False)
 
     link_removed_sentences = []
     for sentence in sentences:
@@ -32,7 +33,7 @@ def process_data(text):
 
     filtered_sentences = removeEmptySentence(special_char_removed_sentences)
 
-    mycol.update_many({}, [{'$set': {'status': 2}}])
+    mycol.update_one({'_id': ObjectId(jobId)}, {"$set": {"status": 2}}, upsert=False)
 
     translated_sentences = []
 
@@ -40,7 +41,7 @@ def process_data(text):
         sentence = translate_to_english(sentence)
         translated_sentences.append(sentence)
 
-    result = getSimilarNews(translated_sentences)
+    result = getSimilarNews(translated_sentences, jobId)
     return result
 
 # function to remove links from sentences
@@ -85,16 +86,16 @@ def removeEmptySentence(sentences):
 # Search news from Google
 
 
-def getSimilarNews(sentences):
+def getSimilarNews(sentences, jobId):
 
-    mycol.update_many({}, [{'$set': {'status': 3}}])
+    mycol.update_one({'_id': ObjectId(jobId)}, {"$set": {"status": 3}}, upsert=False)
 
     counter = 1
     bodies = []
     headings = []
 
     for sentence in sentences:
-        allContent = google_search_content(sentence, 5)
+        allContent = google_search_content(sentence, 5, jobId)
 
         for content in allContent:
             if(content):
@@ -102,13 +103,15 @@ def getSimilarNews(sentences):
                 headings.append([sentence, counter])
                 counter += 1
 
-    result = stance_detect(headings, bodies)
+    result = stance_detect(headings, bodies, jobId)
     return result
 
 
-def google_search_content(query, limit):
+def google_search_content(query, limit, jobId):
     results = search_google(query, limit)
     allContents = []
+
+    mycol.update_one({'_id': ObjectId(jobId)}, {"$set": {"similar_news": results['results']}}, upsert=False)
 
     for link in results['results']:
         content = process_input(link)
@@ -119,8 +122,8 @@ def google_search_content(query, limit):
 # Execute model
 
 
-def stance_detect(headlines_list, bodies_list):
-    mycol.update_many({}, [{'$set': {'status': 4}}])
+def stance_detect(headlines_list, bodies_list, jobId):
+    mycol.update_one({'_id': ObjectId(jobId)}, {"$set": {"status": 4}}, upsert=False)
 
     predictions = load(headlines_list, bodies_list)
 
@@ -134,9 +137,10 @@ def stance_detect(headlines_list, bodies_list):
 
     score = sentimental_analysis_for_discuss(predictions, headlines, bodies)
 
-    mycol.update_many({}, [{'$set': {'status': 5}}])
+    mycol.update_one({'_id': ObjectId(jobId)}, {"$set": {"status": 5}}, upsert=False)
 
     print(score)
+    mycol.update_one({'_id': ObjectId(jobId)}, {"$set": {"result": score}}, upsert=False)
 
     if(score > 0):
         return "LOOKS REAL"
