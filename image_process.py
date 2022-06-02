@@ -29,11 +29,3 @@ def analyze_image(url):
     text = pytesseract.image_to_string(thr)
 
     return text
-
-
-'''
-val = analyze_image(
-    "https://www.techsmith.com/blog/wp-content/uploads/2020/11/TechSmith-Blog-ExtractText.png")
-print(val)
-
-'''

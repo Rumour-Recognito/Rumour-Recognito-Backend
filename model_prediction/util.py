@@ -11,6 +11,7 @@ warnings.filterwarnings(action='ignore', category=UserWarning, module='gensim')
 from csv import DictReader
 from csv import DictWriter
 import numpy as np
+from collections import OrderedDict
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.feature_extraction.text import TfidfTransformer
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -63,11 +64,27 @@ class FNCData:
 
     """
 
-    def __init__(self, base_dir,file_instances, file_bodies):
-        self.base_dir = base_dir
+    def __init__(self, base_dir,file_instances, file_bodies, test_headings_list, test_bodies_list, mode):
+        bodies = []
         # Load data
-        self.instances = self.read(file_instances)
-        bodies = self.read(file_bodies)
+        if(mode == 'train'):
+            self.base_dir = base_dir
+            self.instances = self.read(file_instances)
+            bodies = self.read(file_bodies)
+        else:
+            self.instances = []
+            for item in test_headings_list:
+                od = OrderedDict()
+                od['Headline'] = item[0]
+                od['Body ID'] = item[1]
+                self.instances.append(od)
+
+            for item in test_bodies_list:
+                od = OrderedDict()
+                od['Body ID'] = item[0]
+                od['articleBody'] = item[1]
+                bodies.append(od)
+
         self.heads = {}
         self.bodies = {}
 

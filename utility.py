@@ -12,7 +12,7 @@ myclient = pymongo.MongoClient(
 mydb = myclient["rumor_recognito_db"]
 mycol = mydb["progress"]
 
-
+# Preprocess sentences and translate
 def process_data(text):
     sentences = text.split('\n')
 
@@ -42,8 +42,6 @@ def process_data(text):
     return result
 
 # function to remove links from sentences
-
-
 def removeLinksAndGetSentences(text):
     wordsInText = text.split(' ')
     filteredWord = []
@@ -55,8 +53,6 @@ def removeLinksAndGetSentences(text):
     return ' '.join(filteredWord)
 
 # function to filterTextFromSpecialCharacters
-
-
 def filterTextFromSpecialCharacters(text):
     text = text.strip()
     filteredText = []
@@ -80,45 +76,25 @@ def removeEmptySentence(sentences):
 
     return nonEmptySentences
 
-
+# Search news from Google
 def getSimilarNews(sentences):
 
     mycol.update_many({}, [{'$set': {'status': 3}}])
 
     counter = 1
     bodies = []
-    bodiesColumnTitles = ['Body ID', 'articleBody']
     headings = []
-    headingsColumnTitles = ['Headline', 'Body ID']
 
-    bodiesContent = []
-    headlinesContent = []
     for sentence in sentences:
         allContent = google_search_content(sentence, 5)
 
         for content in allContent:
             if(content):
-                bodiesContent.append(content)
-                headlinesContent.append(sentence)
                 bodies.append([counter, content])
                 headings.append([sentence, counter])
                 counter += 1
 
-    with open('./data/test_bodies.csv', 'w', encoding="utf-8") as f:
-        write = csv.writer(f)
-        write.writerow(bodiesColumnTitles)
-        write.writerows(bodies)
-
-    with open('./data/test_stances_unlabeled.csv', 'w', encoding="utf-8") as f:
-        write = csv.writer(f)
-        write.writerow(headingsColumnTitles)
-        write.writerows(headings)
-
-    dict = {}
-    dict['heading'] = headings
-    dict['body'] = bodies
-
-    result = stance_detect(bodiesContent, headlinesContent)
+    result = stance_detect(headings, bodies)
     return result
 
 
@@ -132,19 +108,19 @@ def google_search_content(query, limit):
 
     return allContents
 
-
-def stance_detect(bodies, headlines):
-
+# Execute model
+def stance_detect(headlines_list, bodies_list):
     mycol.update_many({}, [{'$set': {'status': 4}}])
 
-    load()
-    predictions = []
-    with open('./result/predictions_test.csv', newline='') as f:
-        reader = csv.reader(f)
-        data = list(reader)
-        for each in data:
-            predictions.extend(each)
-        predictions.remove("Prediction")
+    predictions = load(headlines_list, bodies_list)
+
+    headlines = []
+    bodies = []
+    for item in headlines_list:
+        headlines.append(item[0])
+
+    for item in bodies_list:
+        bodies.append(item[1])
 
     score = sentimental_analysis_for_discuss(predictions, headlines, bodies)
 
@@ -159,13 +135,13 @@ def stance_detect(bodies, headlines):
     else:
         return "UNPREDICTABLE"
 
-
+# Extract id from fb url
 def fb_id_extract(url):
     id = re.findall(
         r'(?:(?:http|https):\/\/(?:www|m|mbasic|business)\.(?:facebook|fb)\.com\/)(?:photo(?:\.php|s)|permalink\.php|video\.php|media|watch\/|questions|notes|[^\/]+\/(?:activity|posts|videos|photos))[\/?](?:fbid=|story_fbid=|id=|b=|v=|)([0-9]+|[^\/]+\/[\d]+)', url)
     return id[0]
 
-
+# Extract id from twitter url
 def tweet_id_extract(url):
     id = re.findall(r'twitter\.com\/.*\/status(?:es)?\/([^\/\?]+)', url)
     return id[0]
