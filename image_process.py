@@ -1,31 +1,35 @@
-import requests
 import pytesseract
 import cv2
+import urllib.request
+import numpy as np
+from PIL import Image
 
 
-def analyze_image(url):
+def analyze_image(source, mode):
     #pytesseract.pytesseract.tesseract_cmd = r'C:\\Program Files\\Tesseract-OCR\\tesseract.exe'
     pytesseract.pytesseract.tesseract_cmd = "/app/.apt/usr/bin/tesseract"
 
-    if(url != ''):
-        file_name = "image.jpg"
+    if(mode == 'url'):
+        url_response = urllib.request.urlopen(source)
+        img_array = np.array(bytearray(url_response.read()), dtype=np.uint8)
+        img = cv2.imdecode(img_array, -1)
 
-        res = requests.get(url, stream=True)
+        (h, w) = img.shape[:2]
+        img = cv2.resize(img, (w*3, h*3))
+        gry = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        thr = cv2.threshold(gry, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)[1]
 
-        if res.status_code == 200:
-            with open(file_name, 'wb') as f:
-                f.write(requests.get(url).content)
-            print('Image sucessfully Downloaded: ', file_name)
-        else:
-            print('Image Couldn\'t be retrieved')
+        text = pytesseract.image_to_string(thr)
 
-    img = cv2.imread("image.jpg")
-    (h, w) = img.shape[:2]
-    img = cv2.resize(img, (w*3, h*3))
-    gry = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    thr = cv2.threshold(
-        gry, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)[1]
+    else:
+        img = Image.open(source)
+        img = np.array(img)
 
-    text = pytesseract.image_to_string(thr)
+        (h, w) = img.shape[:2]
+        img = cv2.resize(img, (w*3, h*3))
+        gry = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        thr = cv2.threshold(gry, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)[1]
+
+        text = pytesseract.image_to_string(thr)
 
     return text

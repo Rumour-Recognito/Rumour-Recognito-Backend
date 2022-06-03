@@ -80,9 +80,9 @@ def scrape_twitter():
     print("Before image: " + tweetText)
     if tweet['media']:
         print("Image analysis: ")
-        print(analyze_image(tweet['media'][0]['image_url']))
+        print(analyze_image(tweet['media'][0]['image_url'], 'url'))
         tweetText = tweetText + " " + \
-            analyze_image(tweet['media'][0]['image_url'])
+            analyze_image(tweet['media'][0]['image_url'], 'url')
     print("After image: " + tweetText)
     mycol.update_one({'_id': ObjectId(data['jobId'])}, {"$set": {"news_text": tweetText}}, upsert=False)
     result = process_data(tweetText, data['jobId'])
@@ -112,8 +112,8 @@ def scrape_facebook():
     postText = post['post_text']
     if(post['image'] != None):
         print("Image analysis: ")
-        print(analyze_image(post['image']))
-        postText = postText + " " + analyze_image(post['image'])
+        print(analyze_image(post['image'], 'url'))
+        postText = postText + " " + analyze_image(post['image'], 'url')
     print(postText)
     mycol.update_one({'_id': ObjectId(data['jobId'])}, {"$set": {"news_text": postText}}, upsert=False)
     result = process_data(postText, data['jobId'])
@@ -158,7 +158,7 @@ def analyze():
     mycol.update_one({'_id': ObjectId(jobId)}, {"$set": {"type": 3}}, upsert=False)
     file = request.files['file']
     file.save(os.path.join(base_dir, "image.jpg"))
-    text = analyze_image('')
+    text = analyze_image(file, 'file')
     print(text)
     mycol.update_one({'_id': ObjectId(jobId)}, {"$set": {"news_text": text}}, upsert=False)
     result = process_data(text, jobId)

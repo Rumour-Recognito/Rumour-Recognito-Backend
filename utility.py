@@ -1,6 +1,5 @@
 from translate_text import *
 from bson.objectid import ObjectId
-import csv
 import pymongo
 import re
 from search_google import *
