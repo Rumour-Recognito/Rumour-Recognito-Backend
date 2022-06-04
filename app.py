@@ -18,7 +18,6 @@ myclient = pymongo.MongoClient(
     "mongodb+srv://squadra:1234@cluster0.wiuug.mongodb.net/?retryWrites=true&w=majority")
 mydb = myclient["rumor_recognito_db"]
 mycol = mydb["progress"]
-mycol.update_many({}, [{'$set': {'status': -1}}])
 
 ### Check if server is running successfully ###
 
@@ -55,14 +54,6 @@ def getStatus():
     data = mycol.find_one({"_id": ObjectId(jobId)})
     return str(data['status'])
 
-# resets the status to -1
-
-
-@app.route('/reset-status')
-def resetStatus():
-    mycol.update_many({}, [{'$set': {'status': -1}}])
-    data = mycol.find_one()
-    return str(data['status'])
 
 ### Individual tweet details (without comments)  ###
 
