@@ -9,6 +9,7 @@ nltk==3.3
 numpy==1.21.5
 opencv-python-headless==4.2.0.32
 pillow==9.1.0
+protobuf==3.20.x
 pymongo==4.1.1
 pymongo[srv]
 pytesseract==0.3.9
