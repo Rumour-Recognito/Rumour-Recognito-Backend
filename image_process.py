@@ -3,11 +3,14 @@ import cv2
 import urllib.request
 import numpy as np
 from PIL import Image
+from flask import request
 
 
 def analyze_image(source, mode):
-    #pytesseract.pytesseract.tesseract_cmd = r'C:\\Program Files\\Tesseract-OCR\\tesseract.exe'
-    pytesseract.pytesseract.tesseract_cmd = "/app/.apt/usr/bin/tesseract"
+    if '127.0.0.1:5000' in request.root_url or 'localhost' in request.root_url:
+        pytesseract.pytesseract.tesseract_cmd = r'C:\\Program Files\\Tesseract-OCR\\tesseract.exe'
+    else:
+        pytesseract.pytesseract.tesseract_cmd = "/app/.apt/usr/bin/tesseract"
 
     if(mode == 'url'):
         url_response = urllib.request.urlopen(source)
