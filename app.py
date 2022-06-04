@@ -39,7 +39,7 @@ def getJobId():
 # Delete Job details
 
 
-@app.route('/deleteId')
+@app.route('/deleteId', methods=['DELETE'])
 def deleteJob():
     jobId = request.args.get('jobId')
     obj = {"_id": ObjectId(jobId)}
