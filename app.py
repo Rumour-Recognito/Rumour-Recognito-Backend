@@ -24,7 +24,7 @@ mycol = mydb["progress"]
 
 @app.route('/')
 def hello_world():
-    return 'Rumour-Reckon Backend running!'
+    return 'Rumour-Recognito-Backend running!'
 
 # Return Job ID for client
 
